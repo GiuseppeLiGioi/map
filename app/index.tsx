@@ -1,7 +1,7 @@
-import { StyleSheet, Text } from "react-native";
-
+import Map from "@/components/my/Map";
+import { StyleSheet } from "react-native";
 export default function HomeScreen() {
-  return <Text>Home</Text>;
+  return <Map />;
 }
 
 const styles = StyleSheet.create({});
