@@ -1,11 +1,25 @@
 import { AppleMaps, GoogleMaps } from "expo-maps";
 import { useState } from "react";
-import { Platform, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Alert,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 type Coordinates = {
   latitude: number;
   longitude: number;
 };
+type CameraState = {
+  coordinates: Coordinates;
+  zoom: number;
+  heading?: number;
+  pitch?: number;
+};
+
 type ExpoMapClickEvent = {
   coordinates?: {
     latitude?: number;
@@ -16,6 +30,10 @@ type ExpoMapClickEvent = {
 export default function Mapp() {
   const [address, setAddress] = useState<string>("");
   const [marker, setMarker] = useState<Coordinates | null>(null);
+  const [cameraState, setCameraState] = useState<CameraState>({
+    coordinates: { latitude: 40.9236, longitude: 9.4964 },
+    zoom: 14,
+  });
 
   //when user click, from coords to address
   const getAddressFromCoords = async (coords: Coordinates): Promise<void> => {
@@ -36,6 +54,41 @@ export default function Mapp() {
     } catch (error) {
       setAddress(`${coords.latitude} - ${coords.longitude}`);
       console.error(error);
+    }
+  };
+
+  const searchAddress = async (): Promise<void> => {
+    if (!address) return; //if there isn't address return;
+
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          address
+        )}`
+      );
+
+      if (!res.ok) throw new Error("Errore nel fetch con indirizzo");
+
+      const data = await res.json();
+
+      if (!data.length) {
+        Alert.alert("Attenzione", "Indirizzo non trovato");
+        return;
+      }
+
+      const coords: Coordinates = {
+        latitude: parseFloat(data[0].lat),
+        longitude: parseFloat(data[0].lon),
+      };
+
+      setMarker(coords);
+      setCameraState({
+        coordinates: coords,
+        zoom: 14,
+      });
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Errore durante la ricerca");
     }
   };
 
@@ -63,15 +116,13 @@ export default function Mapp() {
         placeholderTextColor="black"
         value={address}
         onChangeText={setAddress}
+        onSubmitEditing={searchAddress}
         returnKeyType="search"
       />
 
       <MapComponent
         style={styles.map}
-        cameraPosition={{
-          coordinates: { latitude: 40.9236, longitude: 9.4964 },
-          zoom: 14,
-        }}
+        cameraPosition={cameraState}
         onMapClick={onMapPress}
         markers={
           marker
