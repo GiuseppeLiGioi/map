@@ -1,5 +1,12 @@
 import { useCallback, useState } from "react";
-import { Alert, StyleSheet, TextInput, View } from "react-native";
+import {
+  Alert,
+  StyleProp,
+  StyleSheet,
+  TextInput,
+  View,
+  ViewStyle,
+} from "react-native";
 import MapView, {
   MapPressEvent,
   Marker,
@@ -7,6 +14,12 @@ import MapView, {
   UrlTile,
 } from "react-native-maps";
 
+type MapProps = {
+  placeholder: string;
+  placeholderColor: string;
+  style?: StyleProp<ViewStyle>;
+  defaultPosition: Region;
+};
 type Coordinates = {
   latitude: number;
   longitude: number;
@@ -19,7 +32,12 @@ const INITIAL_REGION: Region = {
   latitudeDelta: 0.05,
   longitudeDelta: 0.05,
 };
-export default function Map() {
+export default function Map({
+  placeholder,
+  placeholderColor,
+  style,
+  defaultPosition,
+}: MapProps) {
   const [region, setRegion] = useState<Region>(INITIAL_REGION);
   const [marker, setMarker] = useState<Coordinates | null>(null);
   const [address, setAddress] = useState<string>("");
@@ -90,11 +108,11 @@ export default function Map() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <TextInput
         style={styles.input}
-        placeholder="Cerca un indirizzo"
-        placeholderTextColor="black"
+        placeholder={placeholder}
+        placeholderTextColor={placeholderColor}
         value={address}
         onChangeText={setAddress}
         onSubmitEditing={searchAddress}
@@ -103,7 +121,7 @@ export default function Map() {
 
       <MapView
         style={styles.map}
-        region={region}
+        region={defaultPosition}
         onRegionChangeComplete={setRegion}
         onPress={onPressMap}
       >
