@@ -2,6 +2,7 @@ import { AppleMaps, GoogleMaps } from "expo-maps";
 import { useState } from "react";
 import {
   Alert,
+  Button,
   Platform,
   StyleProp,
   StyleSheet,
@@ -103,6 +104,10 @@ export default function Mapp({
     getAddressFromCoords(position);
   };
 
+  const clearInput = () => {
+    setAddress("");
+  };
+
   if (Platform.OS !== "ios" && Platform.OS !== "android") {
     return <Text>Maps are only available on Android and iOS</Text>;
   }
@@ -112,16 +117,18 @@ export default function Mapp({
 
   return (
     <View style={[styles.container, style]}>
-      <TextInput
-        style={styles.input}
-        placeholder={placeholder}
-        placeholderTextColor={placeholderColor}
-        value={address}
-        onChangeText={setAddress}
-        onSubmitEditing={searchAddress}
-        returnKeyType="search"
-      />
-
+      <View style={styles.inputRow}>
+        <TextInput
+          style={[styles.input, { flex: 1 }]}
+          placeholder={placeholder}
+          placeholderTextColor={placeholderColor}
+          value={address}
+          onChangeText={setAddress}
+          onSubmitEditing={searchAddress}
+          returnKeyType="search"
+        />
+        <Button title="Clear" onPress={clearInput} />
+      </View>
       <MapComponent
         style={styles.map}
         cameraPosition={defaultPosition}
@@ -146,6 +153,11 @@ export default function Mapp({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
   },
   input: {
     padding: 12,

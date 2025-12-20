@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import {
   Alert,
+  Button,
   StyleProp,
   StyleSheet,
   TextInput,
@@ -107,17 +108,24 @@ export default function Map({
     getAddressFromCoords(coords);
   }, []);
 
+  const clearInput = () => {
+    setAddress("");
+  };
+
   return (
     <View style={[styles.container, style]}>
-      <TextInput
-        style={styles.input}
-        placeholder={placeholder}
-        placeholderTextColor={placeholderColor}
-        value={address}
-        onChangeText={setAddress}
-        onSubmitEditing={searchAddress}
-        returnKeyType="search"
-      />
+      <View style={styles.inputRow}>
+        <TextInput
+          style={[styles.input, { flex: 1 }]}
+          placeholder={placeholder}
+          placeholderTextColor={placeholderColor}
+          value={address}
+          onChangeText={setAddress}
+          onSubmitEditing={searchAddress}
+          returnKeyType="search"
+        />
+        <Button title="Clear" onPress={clearInput} />
+      </View>
 
       <MapView
         style={styles.map}
@@ -140,6 +148,11 @@ export default function Map({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
   },
   input: {
     padding: 12,
