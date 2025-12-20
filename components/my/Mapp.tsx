@@ -104,10 +104,6 @@ export default function Mapp({
     getAddressFromCoords(position);
   };
 
-  const clearInput = () => {
-    setAddress("");
-  };
-
   if (Platform.OS !== "ios" && Platform.OS !== "android") {
     return <Text>Maps are only available on Android and iOS</Text>;
   }
@@ -127,7 +123,7 @@ export default function Mapp({
           onSubmitEditing={searchAddress}
           returnKeyType="search"
         />
-        <Button title="Clear" onPress={clearInput} />
+        <Button title="Clear" onPress={() => setAddress("")} />
       </View>
       <MapComponent
         style={styles.map}

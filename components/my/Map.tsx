@@ -108,10 +108,6 @@ export default function Map({
     getAddressFromCoords(coords);
   }, []);
 
-  const clearInput = () => {
-    setAddress("");
-  };
-
   return (
     <View style={[styles.container, style]}>
       <View style={styles.inputRow}>
@@ -124,7 +120,7 @@ export default function Map({
           onSubmitEditing={searchAddress}
           returnKeyType="search"
         />
-        <Button title="Clear" onPress={clearInput} />
+        <Button title="Clear" onPress={() => setAddress("")} />
       </View>
 
       <MapView
