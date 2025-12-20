@@ -39,7 +39,7 @@ export default function Map({
   style,
   defaultPosition,
 }: MapProps) {
-  const [region, setRegion] = useState<Region>(INITIAL_REGION);
+  const [region, setRegion] = useState<Region>(defaultPosition);
   const [marker, setMarker] = useState<Coordinates | null>(null);
   const [address, setAddress] = useState<string>("");
 
@@ -125,7 +125,7 @@ export default function Map({
 
       <MapView
         style={styles.map}
-        region={defaultPosition}
+        region={region}
         onRegionChangeComplete={setRegion}
         onPress={onPressMap}
       >

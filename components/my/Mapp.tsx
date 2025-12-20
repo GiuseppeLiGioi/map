@@ -20,6 +20,7 @@ type MappProps = {
     coordinates: { latitude: number; longitude: number };
     zoom: number;
   };
+  zoomCamera: number;
 };
 type Coordinates = {
   latitude: number;
@@ -38,9 +39,12 @@ export default function Mapp({
   placeholderColor,
   style,
   defaultPosition,
+  zoomCamera,
 }: MappProps) {
   const [address, setAddress] = useState<string>("");
   const [marker, setMarker] = useState<Coordinates | null>(null);
+  const [cameraPosition, setCameraPosition] =
+    useState<typeof defaultPosition>(defaultPosition);
 
   //when user click, from coords to address
   const getAddressFromCoords = async (coords: Coordinates): Promise<void> => {
@@ -65,30 +69,28 @@ export default function Mapp({
   };
 
   const searchAddress = async (): Promise<void> => {
-    if (!address) return; //if there isn't address return;
-
+    if (!address) return; //if there isn't an address return
     try {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
           address
         )}`
       );
-
       if (!res.ok) throw new Error("Errore nel fetch con indirizzo");
-
       const data = await res.json();
-
       if (!data.length) {
         Alert.alert("Attenzione", "Indirizzo non trovato");
         return;
       }
-
       const coords: Coordinates = {
         latitude: parseFloat(data[0].lat),
         longitude: parseFloat(data[0].lon),
       };
-
       setMarker(coords);
+      setCameraPosition({
+        coordinates: coords,
+        zoom: zoomCamera,
+      });
     } catch (error) {
       console.error(error);
       Alert.alert("Errore durante la ricerca");
@@ -127,7 +129,7 @@ export default function Mapp({
       </View>
       <MapComponent
         style={styles.map}
-        cameraPosition={defaultPosition}
+        cameraPosition={cameraPosition}
         onMapClick={onMapPress}
         markers={
           marker
