@@ -1,7 +1,24 @@
 import { AppleMaps, GoogleMaps } from "expo-maps";
 import { useState } from "react";
-import { Platform, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Platform,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  ViewStyle,
+} from "react-native";
 
+type MappProps = {
+  placeholder: string;
+  placeholderColor: string;
+  style?: StyleProp<ViewStyle>;
+  defaultPosition: {
+    coordinates: { latitude: number; longitude: number };
+    zoom: number;
+  };
+};
 type Coordinates = {
   latitude: number;
   longitude: number;
@@ -13,7 +30,12 @@ type ExpoMapClickEvent = {
   };
 };
 
-export default function Mapp() {
+export default function Mapp({
+  placeholder,
+  placeholderColor,
+  style,
+  defaultPosition,
+}: MappProps) {
   const [address, setAddress] = useState<string>("");
   const [marker, setMarker] = useState<Coordinates | null>(null);
 
@@ -56,11 +78,11 @@ export default function Mapp() {
     Platform.OS === "android" ? GoogleMaps.View : AppleMaps.View;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <TextInput
         style={styles.input}
-        placeholder="Cerca un indirizzo"
-        placeholderTextColor="black"
+        placeholder={placeholder}
+        placeholderTextColor={placeholderColor}
         value={address}
         onChangeText={setAddress}
         returnKeyType="search"
@@ -68,10 +90,7 @@ export default function Mapp() {
 
       <MapComponent
         style={styles.map}
-        cameraPosition={{
-          coordinates: { latitude: 40.9236, longitude: 9.4964 },
-          zoom: 14,
-        }}
+        cameraPosition={defaultPosition}
         onMapClick={onMapPress}
         markers={
           marker
