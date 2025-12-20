@@ -1,6 +1,7 @@
 import { AppleMaps, GoogleMaps } from "expo-maps";
 import { useState } from "react";
 import {
+  Alert,
   Platform,
   StyleProp,
   StyleSheet,
@@ -23,6 +24,7 @@ type Coordinates = {
   latitude: number;
   longitude: number;
 };
+
 type ExpoMapClickEvent = {
   coordinates?: {
     latitude?: number;
@@ -61,6 +63,37 @@ export default function Mapp({
     }
   };
 
+  const searchAddress = async (): Promise<void> => {
+    if (!address) return; //if there isn't address return;
+
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          address
+        )}`
+      );
+
+      if (!res.ok) throw new Error("Errore nel fetch con indirizzo");
+
+      const data = await res.json();
+
+      if (!data.length) {
+        Alert.alert("Attenzione", "Indirizzo non trovato");
+        return;
+      }
+
+      const coords: Coordinates = {
+        latitude: parseFloat(data[0].lat),
+        longitude: parseFloat(data[0].lon),
+      };
+
+      setMarker(coords);
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Errore durante la ricerca");
+    }
+  };
+
   const onMapPress = (event: ExpoMapClickEvent) => {
     const coords = event.coordinates;
     if (!coords?.latitude || !coords?.longitude) return;
@@ -85,6 +118,7 @@ export default function Mapp({
         placeholderTextColor={placeholderColor}
         value={address}
         onChangeText={setAddress}
+        onSubmitEditing={searchAddress}
         returnKeyType="search"
       />
 

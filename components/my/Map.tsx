@@ -61,7 +61,7 @@ export default function Map() {
       const data = await res.json();
 
       if (!data.length) {
-        Alert.alert("Indirizzo non trovato");
+        Alert.alert("Attenzione", "Indirizzo non trovato");
         return;
       }
 
